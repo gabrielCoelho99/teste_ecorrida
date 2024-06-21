@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from utils import initialize_db
@@ -13,9 +14,13 @@ initialize_db(app)
 def create_tables():
     db.create_all()
 
-# Rota para cadastro de usuários
+# Importe User dentro da função ou método necessário
 @app.route('/register', methods=['POST'])
 def register():
+    from models import create_user_model
+
+    User = create_user_model(db)
+    
     data = request.form
     username = data.get('username')
     email = data.get('email')
@@ -33,6 +38,10 @@ def register():
 # Rota para listar todos os usuários (apenas para debug, não deve ser exposta em produção)
 @app.route('/users', methods=['GET'])
 def get_users():
+    from models import create_user_model
+
+    User = create_user_model(db)
+
     users = User.query.all()
     users_list = [{'id': user.id, 'username': user.username, 'email': user.email, 'age': user.age} for user in users]
     return jsonify(users_list), 200
